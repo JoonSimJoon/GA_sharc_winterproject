@@ -61,43 +61,75 @@ int main() {
 		memset(file_buff, 0, sizeof(file_buff));
 	}
 	fclose(fp);
-	fp = fopen("test.txt", "r");
-	while (N--) {
+	for(int tt=0;tt<N;tt++) {
 		//선택 코드
-		printf("==================================================\n");
+		//printf("==================================================\n");
+		fp = fopen("test.txt", "r");
 		//system("cls");
 		vector<s> v; //2*20 
 		s gu;
 		int num,tmp=2000000,key;
 		for (int i = 0; i < 20; i++) { //선택을 위한 값 정렬
 			fscanf(fp, "%d %d", &num, &key);
-			printf("%d %d\n",tmp+ num, key);
+			//printf("%d %d\n",tmp+ num, key); 
 			gu.key = key;
 			gu.value = tmp + num;
 			v.push_back(gu);
 		}
-		printf("==================================================\n");
+		fclose(fp);
+		printf("======================%d번째 학습시작============================\n",tt+1);
 		sort(v.begin(), v.end(), cp);
 		for (int i = 0; i < 20; i++) { //정렬 잘되는지 체크 (잘됨)
 			printf("%d %d\n", v[i].value, v[i].key);
 		}
+		if (v[0].key == 0) {
+			printf("%d번째 유전에 성공.", tt + 1);
+			break;
+		}
 		//교차
+		fp = fopen("test.txt", "w");
+		char numa[3][10] = { 0, };
+		for (int i = 0; i < 3; i++) {
+			printf("*%d ", v[i].value);
+			int tmp = v[i].value;
+			for (int j = 5; j >= 0; j--) {
+				numa[i][j] = 48 + tmp % 10;
+				tmp /= 10;
+			}
+		}
 		for (int i = 0; i < 16; i++) {
 			int cnt = 0;// 111111과의 차이값(가중치)
 			int num = 0; // 숫자들을 6자리 정수로 바꾼거
 			memset(file_buff, 0, sizeof(file_buff));
+			
 			for (int k = 0; k < 6; k++) {
-				file_buff[strlen(file_buff)]=48+
+				file_buff[k] = numa[rand() % 3][k];
+				if (file_buff[k] == '0') cnt++; //111111과의 차이 
+				num = num * 10 + (file_buff[k]-48); // num 갱신
 			}
-			v[i].push_back(cnt); //차이값
-			arr.push_back(num);
 			file_buff[strlen(file_buff)] = ' ';
-			file_buff[strlen(file_buff)] = 48 + v[i][6];
+			file_buff[strlen(file_buff)] = 48 + cnt;
 			file_buff[strlen(file_buff)] = '\n';
-
+			printf("%s", file_buff);
 			fputs(file_buff, fp);
 		}
 		//변이
+		for (int i = 0; i < 4; i++) {
+			int cnt = 0;// 111111과의 차이값(가중치)
+			int num = 0; // 숫자들을 6자리 정수로 바꾼거
+			memset(file_buff, 0, sizeof(file_buff));
+			for (int k = 0; k < 6; k++) {
+				file_buff[k] = 48+rand()%2;
+				if (file_buff[k] == '0') cnt++; //111111과의 차이 
+				num = num * 10 + (file_buff[k] - 48); // num 갱신
+			}
+			file_buff[strlen(file_buff)] = ' ';
+			file_buff[strlen(file_buff)] = 48 + cnt;
+			file_buff[strlen(file_buff)] = '\n';
+			printf("%s", file_buff);
+			fputs(file_buff, fp);
+		}
+		fclose(fp);
 	}
 	fclose(fp);
 	//선택 교차 변이
